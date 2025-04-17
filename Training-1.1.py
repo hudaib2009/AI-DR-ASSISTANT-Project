@@ -112,77 +112,46 @@ def attention_block(x, filters):
 
 def create_model(input_shape=(224, 224, 3)):
     inputs = Input(shape=input_shape)
-    
+
+    # shatnawi`s CNN:
     # Initial Convolution with larger kernel
-    x = Conv2D(64, (7, 7), strides=2, padding='same')(inputs)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = MaxPooling2D((3, 3), strides=2, padding='same')(x)
-    
-    # First Block with Attention
-    x = Conv2D(64, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = attention_block(x, 64)
-    x = Conv2D(64, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = MaxPooling2D((2, 2))(x)
-    x = Dropout(0.25)(x)
-    
-    # Second Block with Attention
-    x = Conv2D(128, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = attention_block(x, 128)
-    x = Conv2D(128, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = MaxPooling2D((2, 2))(x)
-    x = Dropout(0.25)(x)
-    
-    # Third Block with Attention
-    x = Conv2D(256, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = attention_block(x, 256)
-    x = Conv2D(256, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = MaxPooling2D((2, 2))(x)
-    x = Dropout(0.25)(x)
-    
-    # Fourth Block with Attention
-    x = Conv2D(512, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = attention_block(x, 512)
-    x = Conv2D(512, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = MaxPooling2D((2, 2))(x)
-    x = Dropout(0.25)(x)
-    
-    # Fifth Block with Attention
-    x = Conv2D(1024, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = attention_block(x, 1024)
-    x = Conv2D(1024, (3, 3), padding='same')(x)
-    x = BatchNormalization()(x)
-    x = tf.keras.layers.ReLU()(x)
-    x = MaxPooling2D((2, 2))(x)
-    x = Dropout(0.25)(x)
-    
-    # Final Layers with Global Average Pooling
-    x = GlobalAveragePooling2D()(x)
-    x = Dense(2048, activation='relu', kernel_regularizer=l2(0.01))(x)
-    x = BatchNormalization()(x)
-    x = Dropout(0.5)(x)
-    x = Dense(1024, activation='relu', kernel_regularizer=l2(0.01))(x)
-    x = BatchNormalization()(x)
-    x = Dropout(0.3)(x)
-    outputs = Dense(1, activation='sigmoid')(x)
+   inputs = Input(shape=(224, 224, 1))  # assuming grayscale
+
+  # Block 1
+  x = Conv2D(32, (3, 3), padding='same')(inputs)
+  x = BatchNormalization()(x)
+  x = ReLU()(x)
+  x = MaxPooling2D((2, 2))(x)
+  
+  # Block 2
+  x = Conv2D(64, (3, 3), padding='same')(x)
+  x = BatchNormalization()(x)
+  x = ReLU()(x)
+  x = MaxPooling2D((2, 2))(x)
+  
+  # Block 3
+  x = Conv2D(128, (3, 3), padding='same')(x)
+  x = BatchNormalization()(x)
+  x = ReLU()(x)
+  x = MaxPooling2D((2, 2))(x)
+  
+  # Optional: Attention here
+  # x = attention_block(x, 128)
+  
+  # Block 4
+  x = Conv2D(256, (3, 3), padding='same')(x)
+  x = BatchNormalization()(x)
+  x = ReLU()(x)
+  x = MaxPooling2D((2, 2))(x)
+  
+  # Head
+  x = GlobalAveragePooling2D()(x)
+  x = Dropout(0.5)(x)
+  x = Dense(128, activation='relu', kernel_regularizer=l2(0.001))(x)
+  x = Dropout(0.3)(x)
+  output = Dense(1, activation='sigmoid')(x)
+  
+
     
     return Model(inputs, outputs)
 
