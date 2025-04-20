@@ -197,11 +197,19 @@ def train_model(data_dir):
     )
     
     history = model.fit(
-        train_datagen.flow(X_train, y_train, batch_size=256),
-        steps_per_epoch=len(X_train) // 256,
-        epochs=200,
-        validation_data=(X_test, y_test),
-        callbacks=callbacks
+        train_datagen.flow(X_train, y_train, batch_size = BATCHSIZE),
+        ''' steps_per_epoch = len(X_train) // 256,
+            It is not entirely accurate. We calculate the number of steps per epochs (steps_p-
+            er_epochs) by taking the ceiling of the number of training samples (X_train) divi- 
+            ded by Batch Size (batch_size) - not using floor division ( // ). So, if we want 
+            to specify the number of steps, we can run {math.ceil(112000 / 256)}.
+            NOTE: Using {len(X_train) // 256} is ok if we are ok with dropping some samples.
+            That said, you can simply remove it and let the program automatically calculate it
+            automatically.
+            -Written by Ahmad Shatnawi'''
+        epochs = EPOCHS,
+        validation_data = (X_test, y_test),
+        callbacks = callbacks
     )
     
     return model, history
@@ -231,4 +239,6 @@ def plot_training_history(history):
 
 if __name__ == "__main__":
     data_dir = "path_to_your_dataset"
+    BATCHSIZE = 256
+    EPOCHS = 200    
     model, history = train_model(data_dir)
