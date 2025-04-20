@@ -6,6 +6,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, LearningR
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 from sklearn.metrics import (classification_report, confusion_matrix, f1_score,
                            precision_recall_curve, roc_curve, roc_auc_score,
                            average_precision_score, cohen_kappa_score,
@@ -151,9 +152,22 @@ def create_model(input_shape=(224, 224,1)):
     
     return Model(inputs, output)
 
-def train_model(data_dir):
+def train_model(data_dir, total_subset=0.1, train_size=0.8, test_size=0.2):
+    if train_size + test_size != 1.0:
+        raise ValueError("train_size and test_size must sum to 1 when not using validation.")
+
     images, labels = load_data(data_dir)
-    X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.1, random_state=42)
+    images, labels = shuffle(images, labels, random_state=42)
+
+    # First, take only a subset of the data (e.g., 10% of the total)
+    subset_size = int(len(images) * total_subset)
+    images, labels = images[:subset_size], labels[:subset_size]
+
+    # Then split into train and test using that subset
+    X_train, X_test, y_train, y_test = train_test_split(
+        images, labels, test_size=test_size, random_state=42
+    )
+
     X_train = X_train / 255.0
     X_test = X_test / 255.0
     
@@ -240,5 +254,8 @@ def plot_training_history(history):
 if __name__ == "__main__":
     data_dir = "path_to_your_dataset"
     BATCHSIZE = 256
-    EPOCHS = 200    
+    EPOCHS = 200
+    total_subset = 0.1  # Proportion of the full dataset to be used
+    train_size = 0.8    # Proportion of the total_subset to use for training
+    test_size = 0.2     # Proportion of the total_subset to use for testing
     model, history = train_model(data_dir)
