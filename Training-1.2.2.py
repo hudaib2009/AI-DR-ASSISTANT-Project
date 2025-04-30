@@ -255,7 +255,12 @@ if __name__ == "__main__":
     data_dir = r"C:\Users\shatn\OneDrive\Desktop\GitHubProjects\AI-DR-ASSISTANT-Project\Datasets"
     BATCHSIZE = 256
     EPOCHS = 200
-    total_subset = 0.05  # Proportion of the full dataset to be used
-    train_size = 0.7    # Proportion of the total_subset to use for training
-    test_size = 0.3     # Proportion of the total_subset to use for testing
-    model, history = train_model(data_dir)
+    total_subset = input("Enter the total subset proportion (e.g., 0.05 for 5% of the data) [default 1]: ")
+    total_subset = float(total_subset) if total_subset else 1
+
+    train_size = input("Enter the train size proportion (e.g., 0.8 for 80% of subset) [default 0.8]: ")
+    train_size = float(train_size) if train_size else 0.8
+
+    test_size = input("Enter the test size proportion (e.g., 0.2 for 20% of subset) [default 0.2]: ")
+    test_size = float(test_size) if test_size else 0.2
+    model, history = train_model(data_dir, total_subset, train_size, test_size)
