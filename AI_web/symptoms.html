@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptoms of lung cancer</title>
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-mode">
+    <header>
+        <div class="logo">AI Doctor Assistant</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="general_idea.html">How it Works</a></li>
+                <li><a href="symptoms.html">Cancer Symptoms</a></li>
+            </ul>
+            <button class="toggle-button" onclick="toggleMode()" id="modeIcon">🌙</button>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <img src="https://media.istockphoto.com/id/1409138328/photo/radiology-doctor-working-diagnose-treatment-virtual-human-lungs-and-long-covid-19-on-modern.jpg?s=612x612&w=0&k=20&c=GBqBA08hJ0WDG6toI1jTgtW6jFRMQC-n5kRjS3j_BW0=" alt="Doctor examining a medical scan">
+        <div class="hero-content">
+            <h1>Common Symptoms of Lung Cancer</h1>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>Early Warning Signs</h2>
+        <ul class="cont">
+            <li>Persistent cough that doesn't go away or gets worse</li>
+            <li>Coughing up blood or rust-colored sputum</li>
+            <li>Chest pain that worsens with deep breathing, coughing, or laughing</li>
+            <li>Hoarseness</li>
+            <li>Loss of appetite and unexplained weight loss</li>
+            <li>Shortness of breath</li>
+            <li>Feeling tired or weak</li>
+            <li>Infections such as bronchitis and pneumonia that don't go away or keep coming back</li>
+            <li>New onset of wheezing</li>
+        </ul>
+    </div>
+
+    <div class="content-section">
+        <h2>When to See a Doctor</h2>
+        <p class="cont">If you experience any of these symptoms, especially if they persist for more than two weeks, it's important to consult with a healthcare professional. Early detection can significantly improve treatment outcomes.</p>
+    </div>
+
+    <div class="content-section">
+        <h2>Risk Factors</h2>
+        <ul class="cont">
+            <li>Smoking (including secondhand smoke)</li>
+            <li>Exposure to radon gas</li>
+            <li>Exposure to asbestos and other carcinogens</li>
+            <li>Family history of lung cancer</li>
+            <li>Previous radiation therapy to the chest</li>
+            <li>Air pollution</li>
+        </ul>
+    </div>
+
+    <footer>
+        <h3>&copy; 2025 JMI team. All Rights Reserved.</h3>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+    function toggleMode() {
+      const body = document.body;
+      const icon = document.getElementById('modeIcon');
+      if(body.classList.contains('dark-mode')) {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        icon.textContent = '☀️';
+      } else {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        icon.textContent = '🌙';
+      }
+      localStorage.setItem('mode', body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+    window.onload = function() {
+      const savedMode = localStorage.getItem('mode');
+      const body = document.body;
+      const icon = document.getElementById('modeIcon');
+      
+      // Set dark mode as default if no preference is saved
+      if(savedMode === null || savedMode === 'dark') {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        icon.textContent = '🌙';
+      } else if(savedMode === 'light') {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        icon.textContent = '☀️';
+      }
+    }
+    </script>
+</body>
+</html>

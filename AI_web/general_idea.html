@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Doctor Assistant</title>
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-mode">
+    <header>
+        <div class="logo">AI Doctor Assistant</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="general_idea.html">How it Works</a></li>
+                <li><a href="symptoms.html">Cancer Symptoms</a></li>
+            </ul>
+            <button class="toggle-button" onclick="toggleMode()" id="modeIcon">🌙</button>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>AI for Lung Disease Diagnosis</h1>
+        <p>Accurate, Fast, and Reliable Diagnostics</p>
+    </section>
+    
+    <section id="about" class="section">
+        <h2>About the Project</h2>
+        <div class="dropdown" id="dropdown-toggle">
+            <span>Details about the project</span>
+            <i class="fas fa-chevron-down" id="dropdown-icon"></i>
+        </div>
+        <div class="dropdown-content" id="dropdown-content">
+            <p>Our project is dedicated to revolutionizing healthcare through the integration of advanced AI technology, specifically aimed at enhancing the diagnosis of lung diseases...</p>
+            <p>By leveraging state-of-the-art machine learning algorithms and neural networks, our AI system analyzes a multitude of data points...</p>
+            <p>Our AI technology is designed to assist healthcare professionals at various stages of the diagnostic journey...</p>
+            <p>Furthermore, our project emphasizes continuous learning...</p>
+            <p>We are committed to collaboration with medical institutions and professionals to validate our technology within real-world settings...</p>
+            <p>Ultimately, our mission is to empower healthcare professionals by providing them with cutting-edge tools...</p>
+        </div>
+    </section>
+
+    <section id="technology" class="section">
+        <h2>How It Works</h2>
+        <ol>
+            <li>Data Collection and Imaging...</li>
+            <li>Machine Learning Algorithms...</li>
+            <li>Diagnosis Generation...</li>
+            <li>Continuous Learning and Improvement...</li>
+        </ol>
+    </section>
+
+    <section id="benefits" class="section">
+        <h2>Benefits</h2>
+        <ul>
+            <li>Improved Diagnostic Accuracy</li>
+            <li>Faster Patient Turnaround</li>
+            <li>Enhanced Accessibility in Healthcare</li>
+        </ul>
+    </section>
+
+    <section id="faq" class="section">
+        <h2>FAQs</h2>
+        <h3>How does the AI ensure patient privacy?</h3>
+        <p>Our system is compliant with all data protection regulations and ensures patient data is secured.</p>
+    </section>
+    <footer>
+        <h3>&copy; 2025 JMI team. All Rights Reserved.</h3>
+    </footer>
+    <script src="script.js"></script>
+    <script>
+    function toggleMode() {
+      const body = document.body;
+      const icon = document.getElementById('modeIcon');
+      if(body.classList.contains('dark-mode')) {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        icon.textContent = '☀️';
+      } else {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        icon.textContent = '🌙';
+      }
+      localStorage.setItem('mode', body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+    window.onload = function() {
+      const savedMode = localStorage.getItem('mode');
+      const body = document.body;
+      const icon = document.getElementById('modeIcon');
+      
+      // Set dark mode as default if no preference is saved
+      if(savedMode === null || savedMode === 'dark') {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        icon.textContent = '🌙';
+      } else if(savedMode === 'light') {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        icon.textContent = '☀️';
+      }
+    }
+    </script>
+</body>
+</html>
