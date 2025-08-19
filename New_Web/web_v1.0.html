@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>AI Project • Home</title>
+  <meta name="description" content="A clean, responsive website template for an AI project with Models, Blogs, Updates, Feedback, and Donate sections." />
+
+  <!-- Favicon (optional) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🤖</text></svg>">
+
+  <style>
+    /* =============================
+       Design System & Theme Tokens
+       ============================= */
+    :root {
+      --bg: #0b0d12;
+      --surface: #121521;
+      --text: #e6e9ef;
+      --muted: #9aa3b2;
+      --primary: #5e17eb; /* You said you like this color in a past chat */
+      --primary-contrast: #ffffff;
+      --border: #23283a;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --err: #ef4444;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+      --radius: 16px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --maxw: 1100px;
+      --nav-h: 64px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    /* Light theme (toggled via .theme-light on <html>) */
+    html.theme-light {
+      --bg: #f7f8fb;
+      --surface: #ffffff;
+      --text: #0b1020;
+      --muted: #53607a;
+      --border: #e6e8ef;
+      --shadow: 0 10px 30px rgba(10, 20, 60, .12);
+    }
+
+    /* Respect OS preference on first visit when no localStorage */
+    @media (prefers-color-scheme: light) {
+      html:not(.theme-dark):not(.theme-light) {
+        --bg: #f7f8fb;
+        --surface: #ffffff;
+        --text: #0b1020;
+        --muted: #53607a;
+        --border: #e6e8ef;
+        --shadow: 0 10px 30px rgba(10, 20, 60, .12);
+      }
+    }
+
+    /* ============ Reset ============ */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 80% -100px, rgba(94,23,235,.25), transparent 40%), var(--bg);
+      line-height: 1.6;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    /* ============ Layout ============ */
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+    .section { padding: 80px 0; }
+    .section h2 { font-size: clamp(24px, 2.2vw + 12px, 40px); margin: 0 0 16px; }
+    .section p.lead { color: var(--muted); margin-top: 0; }
+
+    /* ============ Skip Link ============ */
+    .skip-link { position: absolute; left: -999px; top: -999px; }
+    .skip-link:focus { left: 16px; top: 12px; background: var(--surface); color: var(--text); padding: 8px 12px; border-radius: 10px; box-shadow: var(--shadow); }
+
+    /* ============ Nav ============ */
+    .nav {
+      position: sticky; top: 0; z-index: 50; height: var(--nav-h);
+      background: color-mix(in oklab, var(--surface), transparent 8%);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 0.3px; }
+    .brand .dot { width: 10px; height: 10px; border-radius: 999px; background: linear-gradient(135deg, var(--primary), #7a49f1); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary), transparent 60%); }
+
+    .navlinks { display: flex; align-items: center; gap: 8px; }
+    .navlinks a {
+      padding: 8px 12px; border-radius: 10px; color: var(--muted);
+    }
+    .navlinks a.active { color: var(--primary-contrast); background: color-mix(in oklab, var(--primary), transparent 80%); }
+    .navlinks a:hover { color: var(--text); background: color-mix(in oklab, var(--text), transparent 92%); }
+
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+    .icon-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 12px; padding: 8px 10px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: var(--shadow);
+    }
+    .icon-btn:hover { transform: translateY(-1px); }
+
+    /* Mobile nav */
+    .hamburger { display: none; }
+    @media (max-width: 900px) {
+      .hamburger { display: inline-flex; }
+      .navlinks { position: fixed; inset: calc(var(--nav-h) + 8px) 16px auto 16px; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); display: none; }
+      .navlinks.open { display: flex; }
+    }
+
+    /* ============ Hero / Home ============ */
+    .hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: center; }
+    .hero h1 { font-size: clamp(32px, 3.5vw + 16px, 56px); margin: 0 0 10px; line-height: 1.1; }
+    .kicker { display: inline-block; font-weight: 700; font-size: 14px; letter-spacing: .12em; color: var(--primary-contrast); background: color-mix(in oklab, var(--primary), transparent 60%); padding: 6px 10px; border-radius: 999px; }
+    .cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; box-shadow: var(--shadow); }
+    .btn.primary { background: linear-gradient(135deg, var(--primary), #7a49f1); color: var(--primary-contrast); border-color: transparent; }
+    .btn:hover { transform: translateY(-1px); }
+    .hero .card {
+      border: 1px solid var(--border); padding: 18px; border-radius: var(--radius-xl);
+      background: radial-gradient(600px 300px at 100% 0, color-mix(in oklab, var(--primary), transparent 85%), transparent), var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .hero .metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 12px; }
+    .metric { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px; text-align: center; }
+    .metric b { font-size: 22px; display: block; }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+
+    /* ============ Generic Cards/Grid ============ */
+    .grid { display: grid; gap: 16px; }
+    .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 900px){ .grid.cols-3 { grid-template-columns: 1fr; } .grid.cols-2 { grid-template-columns: 1fr; } }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow); }
+    .card h3 { margin: 0 0 6px; font-size: 18px; }
+    .card p { margin: 0; color: var(--muted); }
+
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); font-size: 12px; color: var(--muted); }
+
+    /* ============ Models ============ */
+    .model-card { display:flex; flex-direction:column; gap:10px; }
+    .model-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .select { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+    .model-tags { display:flex; gap:6px; flex-wrap:wrap; }
+
+    /* ============ Blogs ============ */
+    .blog-list { display:grid; gap:16px; grid-template-columns: repeat(3,1fr); }
+    .blog-card { display:flex; flex-direction:column; gap:10px; }
+    .blog-card time { font-size: 12px; color: var(--muted); }
+    .blog-card .read-more { margin-top:auto; }
+    @media (max-width: 1024px){ .blog-list { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 700px){ .blog-list { grid-template-columns: 1fr; } }
+
+    /* ============ Updates Timeline ============ */
+    .timeline { position: relative; margin-left: 8px; }
+    .timeline::before { content:""; position:absolute; left: 10px; top:0; bottom:0; width:2px; background: var(--border); }
+    .t-item { position:relative; padding-left: 32px; margin: 14px 0; }
+    .t-item::before { content:""; position:absolute; left:3px; top:6px; width:16px; height:16px; border-radius:999px; background: linear-gradient(135deg, var(--primary), #7a49f1); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary), transparent 70%); }
+
+    /* ============ Feedback Form ============ */
+    form.feedback { display:grid; gap:12px; max-width: 760px; }
+    .field { display:grid; gap:6px; }
+    label { font-weight: 600; }
+    input[type="text"], input[type="email"], textarea, select {
+      padding: 12px; border-radius: 12px; border:1px solid var(--border); background: var(--surface); color: var(--text);
+    }
+    textarea { min-height: 140px; resize: vertical; }
+    .help { color: var(--muted); font-size: 13px; }
+    .status { font-size: 14px; }
+
+    /* ============ Footer ============ */
+    footer { padding: 28px 0 40px; color: var(--muted); border-top: 1px solid var(--border); }
+    .footer-grid { display:grid; gap:16px; grid-template-columns: 2fr 1fr 1fr; }
+    @media (max-width: 900px){ .footer-grid { grid-template-columns: 1fr; } }
+
+    /* ============ Utilities ============ */
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+    .muted { color: var(--muted); }
+    .center { text-align:center; }
+    .spacer { height: 10px; }
+    .divider { height:1px; background: var(--border); margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <a href="#home" class="skip-link">Skip to content</a>
+
+  <!-- ========================= NAVBAR ========================= -->
+  <nav class="nav" aria-label="Primary">
+    <div class="container nav-inner">
+      <a class="brand" href="#home" aria-label="Go to Home">
+        <span class="dot" aria-hidden="true"></span>
+        <span>AI Project</span>
+      </a>
+
+      <button class="icon-btn hamburger" id="btnMenu" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks">
+        <span aria-hidden="true">☰</span>
+        <span class="sr-only">Menu</span>
+      </button>
+
+      <div class="navlinks" id="navlinks" role="menubar">
+        <a role="menuitem" href="#home" class="active">Home</a>
+        <a role="menuitem" href="#models">Models</a>
+        <a role="menuitem" href="#blogs">Blogs</a>
+        <a role="menuitem" href="#updates">Updates</a>
+        <a role="menuitem" href="#feedback">Feedback</a>
+        <a role="menuitem" href="#donate">Donate</a>
+      </div>
+
+      <button class="icon-btn" id="btnTheme" aria-label="Toggle theme" title="Toggle dark/light">🌓<span class="sr-only">Toggle theme</span></button>
+    </div>
+  </nav>
+
+  <!-- ========================= HOME ========================= -->
+  <header id="home" class="section" tabindex="-1">
+    <div class="container hero">
+      <div>
+        <span class="kicker">WELCOME</span>
+        <h1>Smarter Medical AI — Clear, Fast, and Privacy‑First</h1>
+        <p class="lead">This project brings together multiple AI models for imaging, tabular prediction, and clinical text support. Use the Models section to explore capabilities, read our latest research notes in Blogs, and track progress in Updates. We ♥ feedback!</p>
+        <div class="cta-row">
+          <a href="#models" class="btn primary">Explore Models</a>
+          <a href="#feedback" class="btn">Share Feedback</a>
+        </div>
+        <div class="spacer"></div>
+        <div class="grid cols-3">
+          <div class="metric"><b>3</b><span class="muted">Model families</span></div>
+          <div class="metric"><b>75%</b><span class="muted">Baseline accuracy*</span></div>
+          <div class="metric"><b>GDPR</b><span class="muted">Privacy‑aware flows</span></div>
+        </div>
+        <p class="help">*Replace with your real metrics later.</p>
+      </div>
+
+      <div class="card" aria-labelledby="quick-start">
+        <h3 id="quick-start">Quick Start</h3>
+        <ol>
+          <li>Pick a model below (e.g., Imaging CNN).</li>
+          <li>Upload a sample (disabled in demo).</li>
+          <li>Review the explanation &amp; confidence.</li>
+        </ol>
+        <div class="hero metrics">
+          <div class="badge">🔒 On-device optional</div>
+          <div class="badge">🧩 Modular</div>
+          <div class="badge">📱 Responsive</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================= MODELS ========================= -->
+  <section id="models" class="section" aria-labelledby="models-title" tabindex="-1">
+    <div class="container">
+      <h2 id="models-title">Models</h2>
+      <p class="lead">Showcase your models with descriptions and easy selection. Wire up actions later to your backend or Python APIs.</p>
+
+      <div class="grid cols-3" id="modelGrid" aria-live="polite"></div>
+
+      <div class="divider"></div>
+      <div class="card">
+        <label for="modelSelect">Quick Select:</label>
+        <select id="modelSelect" class="select" aria-label="Choose model by name"></select>
+        <div class="spacer"></div>
+        <button class="btn primary" id="btnLoadModel">Load Selected Model</button>
+        <p class="help" id="modelStatus" role="status" aria-live="polite">No model loaded yet.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= BLOGS ========================= -->
+  <section id="blogs" class="section" aria-labelledby="blogs-title" tabindex="-1">
+    <div class="container">
+      <h2 id="blogs-title">Blogs</h2>
+      <p class="lead">Long‑form notes and articles. This list is rendered from a small JSON array to make future additions easy.</p>
+      <div class="blog-list" id="blogList" aria-live="polite"></div>
+      <div class="center">
+        <button class="btn" id="btnAddSamplePost" title="Add a placeholder blog post">+ Add Sample Post</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= UPDATES ========================= -->
+  <section id="updates" class="section" aria-labelledby="updates-title" tabindex="-1">
+    <div class="container">
+      <h2 id="updates-title">Updates</h2>
+      <p class="lead">Recent changes shipped as a timeline. Replace with your real changelog or connect to a backend.</p>
+      <div class="timeline" id="timeline" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ========================= FEEDBACK ========================= -->
+  <section id="feedback" class="section" aria-labelledby="feedback-title" tabindex="-1">
+    <div class="container">
+      <h2 id="feedback-title">Feedback</h2>
+      <p class="lead">Tell us what’s working, what’s confusing, or what you want next. The form is wired for client‑side validation and ready to connect to your API.</p>
+
+      <form class="feedback" id="feedbackForm" novalidate>
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" placeholder="Your name" required />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+        </div>
+        <div class="field">
+          <label for="topic">Topic</label>
+          <select id="topic" name="topic" required>
+            <option value="">Choose a topic…</option>
+            <option>General Impression</option>
+            <option>Bug Report</option>
+            <option>Feature Request</option>
+            <option>Model Accuracy</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="Write your thoughts…" required></textarea>
+          <p class="help">We read everything. No PHI please.</p>
+        </div>
+        <div class="field">
+          <label class="sr-only" for="consent">Consent</label>
+          <div>
+            <input id="consent" type="checkbox" required aria-describedby="consentHelp" />
+            <label for="consent">I consent to processing my feedback.</label>
+          </div>
+          <p class="help" id="consentHelp">You can request deletion at any time.</p>
+        </div>
+        <button class="btn primary" type="submit">Submit Feedback</button>
+        <p class="status" id="feedbackStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <!-- Backend wiring (optional):
+           - Firebase: call addDoc(collection(db,'feedback'), payload)
+           - Node/Express: POST /api/feedback with JSON body
+           See JS section for a stub. -->
+    </div>
+  </section>
+
+  <!-- ========================= DONATE ========================= -->
+  <section id="donate" class="section" aria-labelledby="donate-title" tabindex="-1">
+    <div class="container">
+      <h2 id="donate-title">Donate</h2>
+      <p class="lead">If this project helps you, consider supporting ongoing development. Thank you! 💜</p>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>PayPal</h3>
+          <p class="muted">Use a hosted PayPal button or link.</p>
+          <a class="btn primary" href="#" target="_blank" rel="noopener noreferrer">PayPal Donate</a>
+          <p class="help">Replace the link with your real donation URL.</p>
+        </div>
+        <div class="card">
+          <h3>Stripe</h3>
+          <p class="muted">Link to a Stripe Checkout session for one‑time or recurring support.</p>
+          <a class="btn primary" href="#" target="_blank" rel="noopener noreferrer">Stripe Checkout</a>
+          <p class="help">Set up a server endpoint to create sessions securely.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= FOOTER ========================= -->
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <strong>AI Project</strong>
+        <p class="muted">Modular, privacy‑aware AI for medical and tech use‑cases. Replace all placeholder copy with your real content.</p>
+      </div>
+      <div>
+        <div class="muted">Pages</div>
+        <div><a href="#home">Home</a></div>
+        <div><a href="#models">Models</a></div>
+        <div><a href="#blogs">Blogs</a></div>
+        <div><a href="#updates">Updates</a></div>
+        <div><a href="#feedback">Feedback</a></div>
+        <div><a href="#donate">Donate</a></div>
+      </div>
+      <div>
+        <div class="muted">Legal</div>
+        <div><a href="#">Terms</a></div>
+        <div><a href="#">Privacy</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================= SCRIPTS ========================= -->
+  <script type="module">
+    // =============================================================
+    // Utility: DOM helpers
+    // =============================================================
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    // Smooth scroll for in-page anchors (respects reduced motion)
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function smoothScrollTo(id){
+      const el = $(id);
+      if(!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({ top, behavior: prefersReduced ? 'auto' : 'smooth' });
+    }
+
+    // =============================================================
+    // Theme: toggle + persistence
+    // =============================================================
+    const THEME_KEY = 'theme'; // 'light' | 'dark'
+    const html = document.documentElement;
+
+    // Load initial theme from localStorage
+    (function initTheme(){
+      const saved = localStorage.getItem(THEME_KEY);
+      if(saved === 'light') html.classList.add('theme-light');
+      else if(saved === 'dark') html.classList.add('theme-dark');
+    })();
+
+    function toggleTheme(){
+      const isLight = html.classList.toggle('theme-light');
+      if(isLight){ html.classList.remove('theme-dark'); localStorage.setItem(THEME_KEY, 'light'); }
+      else { html.classList.add('theme-dark'); localStorage.setItem(THEME_KEY, 'dark'); }
+    }
+
+    $('#btnTheme').addEventListener('click', toggleTheme);
+
+    // =============================================================
+    // Navbar: mobile open/close + active link highlighting
+    // =============================================================
+    const navlinks = $('#navlinks');
+    const btnMenu = $('#btnMenu');
+
+    btnMenu.addEventListener('click', () => {
+      const open = navlinks.classList.toggle('open');
+      btnMenu.setAttribute('aria-expanded', String(open));
+    });
+
+    // Close mobile nav when clicking a link
+    navlinks.addEventListener('click', (e) => {
+      if(e.target.matches('a')){
+        navlinks.classList.remove('open');
+        btnMenu.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Smooth scroll for nav links
+    $$('#navlinks a').forEach(a => {
+      a.addEventListener('click', (e) => {
+        if(a.getAttribute('href').startsWith('#')){
+          e.preventDefault();
+          smoothScrollTo(a.getAttribute('href'));
+        }
+      });
+    });
+
+    // Active section highlighting via IntersectionObserver
+    const sections = ['#home','#models','#blogs','#updates','#feedback','#donate'].map(id => $(id));
+    const linkById = new Map($$('#navlinks a').map(a => [a.getAttribute('href'), a]));
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = '#' + entry.target.id;
+        const link = linkById.get(id);
+        if(!link) return;
+        if(entry.isIntersecting){
+          $$('#navlinks a').forEach(x => x.classList.remove('active'));
+          link.classList.add('active');
+          history.replaceState(null, '', id); // update hash without scrolling
+        }
+      });
+    }, { rootMargin: '-50% 0% -40% 0%', threshold: 0 });
+
+    sections.forEach(sec => io.observe(sec));
+
+    // =============================================================
+    // Data: sample content (edit/replace freely)
+    // =============================================================
+    const MODELS = [
+      {
+        id: 'img-cnn',
+        name: 'Imaging CNN',
+        tagline: 'X‑ray & CT analysis',
+        desc: 'Convolutional network optimized for chest X‑rays (128×128) with heatmap explanations.',
+        chips: ['Grad‑CAM', 'TF/Keras', 'FP16'],
+      },
+      {
+        id: 'tabular-gbt',
+        name: 'Risk Predictor (GBTs)',
+        tagline: 'EHR/tabular features',
+        desc: 'Gradient‑boosted trees for risk stratification with calibrated probabilities.',
+        chips: ['CatBoost', 'AUROC 0.84*', 'Explainable'],
+      },
+      {
+        id: 'nlp-llm',
+        name: 'Clinical Notes Assistant',
+        tagline: 'NLP for triage',
+        desc: 'Summarizes notes, extracts key findings, and drafts reports with safety rails.',
+        chips: ['NER', 'Summarization', 'Zero‑shot'],
+      },
+    ];
+
+    const BLOGS = [
+      {
+        id: 'b-1',
+        title: 'From Pixels to Decisions: Our Imaging Pipeline',
+        date: '2025-06-12',
+        excerpt: 'A behind‑the‑scenes tour of preprocessing, model inference, and saliency maps for radiographs.'
+      },
+      {
+        id: 'b-2',
+        title: 'Risk Modeling with Tabular Data: What Matters',
+        date: '2025-07-03',
+        excerpt: 'Feature selection, leakage pitfalls, and calibrated probabilities in clinical datasets.'
+      },
+      {
+        id: 'b-3',
+        title: 'Human‑in‑the‑Loop: Designing Safer AI Workflows',
+        date: '2025-08-01',
+        excerpt: 'We discuss review queues, confidence thresholds, and escalation to experts.'
+      },
+    ];
+
+    const UPDATES = [
+      { date: '2025-08-10', title: 'v0.6 — Blog system & timeline', notes: 'Added dynamic blog rendering and updates timeline.' },
+      { date: '2025-08-05', title: 'v0.5 — Theme & Nav', notes: 'Dark/Light mode with persistence, sticky nav with active highlighting.' },
+      { date: '2025-07-30', title: 'v0.4 — Models showcase', notes: 'Model cards, tags, and quick‑select control.' },
+    ];
+
+    // =============================================================
+    // Renderers
+    // =============================================================
+    function renderModels(){
+      const grid = $('#modelGrid');
+      grid.innerHTML = '';
+      MODELS.forEach(m => {
+        const el = document.createElement('article');
+        el.className = 'card model-card';
+        el.innerHTML = `
+          <div class="badge">${m.tagline}</div>
+          <h3>${m.name}</h3>
+          <p>${m.desc}</p>
+          <div class="model-tags">${m.chips.map(c => `<span class="badge">${c}</span>`).join('')}</div>
+          <div class="model-actions">
+            <button class="btn" data-action="details" data-id="${m.id}">Details</button>
+            <button class="btn primary" data-action="select" data-id="${m.id}">Use Model</button>
+          </div>`;
+        grid.appendChild(el);
+      });
+
+      // Populate select
+      const sel = $('#modelSelect');
+      sel.innerHTML = '<option value="">Choose a model…</option>' + MODELS.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+
+      // Bind action buttons
+      grid.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-action]');
+        if(!btn) return;
+        const { action, id } = btn.dataset;
+        if(action === 'details'){
+          const model = MODELS.find(x => x.id === id);
+          alert(`${model.name}\n\n${model.desc}\n\nTags: ${model.chips.join(', ')}`);
+        } else if(action === 'select'){
+          $('#modelSelect').value = id;
+          $('#modelStatus').textContent = `Selected: ${MODELS.find(x => x.id===id).name}`;
+        }
+      });
+    }
+
+    function renderBlogs(){
+      const list = $('#blogList');
+      list.innerHTML = '';
+      BLOGS.sort((a,b) => b.date.localeCompare(a.date));
+      BLOGS.forEach(post => {
+        const el = document.createElement('article');
+        el.className = 'card blog-card';
+        el.innerHTML = `
+          <div class="badge">Blog</div>
+          <h3>${post.title}</h3>
+          <time datetime="${post.date}">${new Date(post.date).toLocaleDateString()}</time>
+          <p>${post.excerpt}</p>
+          <div class="spacer"></div>
+          <a class="btn read-more" href="#" aria-label="Read ${post.title}">Read more</a>`;
+        list.appendChild(el);
+      });
+    }
+
+    function renderUpdates(){
+      const t = $('#timeline');
+      t.innerHTML = '';
+      UPDATES.sort((a,b) => b.date.localeCompare(a.date));
+      UPDATES.forEach(u => {
+        const el = document.createElement('div');
+        el.className = 't-item';
+        el.innerHTML = `<div class="badge">${new Date(u.date).toLocaleDateString()}</div><h3>${u.title}</h3><p class="muted">${u.notes}</p>`;
+        t.appendChild(el);
+      });
+    }
+
+    // Initial render
+    renderModels();
+    renderBlogs();
+    renderUpdates();
+
+    // Add sample blog post button
+    $('#btnAddSamplePost').addEventListener('click', () => {
+      const n = BLOGS.length + 1;
+      BLOGS.push({ id: `b-${n}`, title: `New Post #${n}`, date: new Date().toISOString().slice(0,10), excerpt: 'Placeholder body — replace with your content.' });
+      renderBlogs();
+    });
+
+    // Model quick-select
+    $('#btnLoadModel').addEventListener('click', () => {
+      const id = $('#modelSelect').value;
+      if(!id){ $('#modelStatus').textContent = 'Please choose a model first.'; return; }
+      const model = MODELS.find(x => x.id===id);
+      // Stub: replace with real loader (e.g., fetch /models/:id or WebAssembly/TensorFlow.js init)
+      $('#modelStatus').textContent = `Loaded: ${model.name} (demo stub)`;
+    });
+
+    // =============================================================
+    // Feedback form: client-side validation + optional backend stub
+    // =============================================================
+    $('#feedbackForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const status = $('#feedbackStatus');
+      status.textContent = '';
+
+      const fd = new FormData(e.target);
+      const payload = Object.fromEntries(fd.entries());
+      if(!$('#consent').checked){ status.textContent = 'Please provide consent to submit.'; return; }
+
+      // Simple client-side validation
+      for(const [k,v] of Object.entries(payload)){
+        if(!String(v).trim()){ status.textContent = 'Please fill all fields.'; return; }
+      }
+
+      // Optional: send to your backend (UNCOMMENT & set URL)
+      /*
+      try {
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if(!res.ok) throw new Error('Network error');
+        status.textContent = 'Thanks! Your feedback was submitted.';
+        status.style.color = 'var(--ok)';
+        e.target.reset();
+        $('#consent').checked = false;
+        return;
+      } catch (err) {
+        status.textContent = 'Submission failed. Please try again later.';
+        status.style.color = 'var(--err)';
+        return;
+      }
+      */
+
+      // Demo behavior: log + pretend success
+      console.info('Feedback payload (demo):', payload);
+      status.textContent = 'Thanks! (Demo) Feedback captured in console.';
+      status.style.color = 'var(--ok)';
+      e.target.reset();
+      $('#consent').checked = false;
+    });
+
+    // =============================================================
+    // Accessibility enhancements
+    // =============================================================
+    // Trap focus in mobile menu when open (basic)
+    document.addEventListener('keydown', (e) => {
+      if(e.key !== 'Tab') return;
+      if(!navlinks.classList.contains('open')) return;
+      const focusables = $$('a, button, select, [tabindex]:not([tabindex="-1"])', navlinks);
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    });
+  </script>
+
+  <!-- ========================= OPTIONAL BACKEND NOTES =========================
+    Firebase (very quick):
+
+    1) Add Firebase SDK scripts and initialize app + Firestore.
+    2) Replace the fetch stub with:
+
+      import { addDoc, collection } from 'firebase/firestore';
+      await addDoc(collection(db, 'feedback'), payload);
+
+    Node/Express (simple):
+
+    POST /api/feedback
+    Body: { name, email, topic, message }
+    Store in a database (SQLite/Postgres) or forward to email/Discord.
+  ========================================================================== -->
+</body>
+</html>

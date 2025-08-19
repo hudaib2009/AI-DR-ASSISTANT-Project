@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI DR Assistant — JMI</title>
+  <meta name="description" content="AI DR Assistant by Team JMI: models, blogs, updates, feedback, donate, and team info." />
+  <meta name="color-scheme" content="dark light" />
+
+  <style>
+    /* =============================================================
+       THEME & DESIGN TOKENS
+       - Uses CSS variables and a data-theme attribute for persistence
+       - Update --primary to match your brand accent
+       ============================================================= */
+    :root {
+      --bg: #ffffff;
+      --surface: #f6f7fb;
+      --text: #16181d;
+      --muted: #5b657a;
+      --primary: #5e17eb; /* Brand accent */
+      --primary-contrast: #ffffff;
+      --border: #e3e6ef;
+      --radius: 14px;
+      --shadow: 0 10px 30px rgba(10,20,60,.08);
+      --transition: 250ms ease;
+      --nav-h: 68px;
+      --maxw: 1100px;
+      --focus: 3px solid color-mix(in oklab, var(--primary), white 40%);
+    }
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #161a23;
+      --text: #e9ecf1;
+      --muted: #9aa3b2;
+      --border: #23283a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    /* Global reset & base */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 85% -200px, color-mix(in oklab, var(--primary), transparent 85%), transparent 40%), var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background-color var(--transition), color var(--transition);
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    :focus-visible { outline: var(--focus); outline-offset: 2px; border-radius: 10px; }
+
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+    .section { padding: 88px 0; }
+    .section h2 { margin: 0 0 10px; font-size: clamp(22px, 2.1vw + 14px, 38px); color: var(--text); }
+    .lead { color: var(--muted); margin-top: 0; }
+
+    /* Skip link for accessibility */
+    .skip-link { position: absolute; left: -999px; top: -999px; }
+    .skip-link:focus { left: 16px; top: 12px; background: var(--surface); padding: 8px 12px; border-radius: 10px; box-shadow: var(--shadow); }
+
+    /* =============================================================
+       NAVBAR (fixed) with brand, logo, theme toggle
+       ============================================================= */
+    .nav {
+      position: sticky; top: 0; z-index: 50; height: var(--nav-h);
+      background: color-mix(in oklab, var(--surface), transparent 10%);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; text-wrap: nowrap; }
+    .brand-img { height: clamp(28px, 5vw, 44px); width: auto; aspect-ratio: auto; }
+    .brand-name { font-weight: 800; letter-spacing: .2px; }
+    .brand-sub { color: var(--muted); font-size: 12px; margin-left: 6px; }
+
+    .navlinks { display: flex; align-items: center; gap: 6px; }
+    .navlinks a { padding: 8px 10px; border-radius: 10px; color: var(--muted); transition: transform var(--transition), background-color var(--transition), color var(--transition); }
+    .navlinks a:hover { color: var(--text); background: color-mix(in oklab, var(--text), transparent 92%); transform: translateY(-1px); }
+    .navlinks a.active { color: var(--primary-contrast); background: color-mix(in oklab, var(--primary), transparent 70%); }
+
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+    .icon-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 8px 12px; box-shadow: var(--shadow); transition: transform var(--transition), background-color var(--transition); }
+    .icon-btn:hover { transform: translateY(-1px); }
+
+    /* Mobile nav (simple collapse)**/
+    .hamburger { display: none; }
+    @media (max-width: 900px) {
+      .hamburger { display: inline-flex; }
+      .navlinks { position: fixed; inset: calc(var(--nav-h) + 8px) 16px auto 16px; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); display: none; }
+      .navlinks.open { display: flex; }
+    }
+
+    /* =============================================================
+       BUTTONS & BADGES
+       ============================================================= */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); box-shadow: var(--shadow); transition: transform var(--transition), background-color var(--transition), box-shadow var(--transition); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn.primary { background: linear-gradient(135deg, var(--primary), #7a49f1); color: var(--primary-contrast); border-color: transparent; }
+
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); font-size: 12px; color: var(--muted); background: var(--surface); }
+
+    /* =============================================================
+       HERO (HOME)
+       ============================================================= */
+    .hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: center; }
+    .hero h1 { font-size: clamp(30px, 3.6vw + 16px, 56px); margin: 0 0 6px; line-height: 1.1; }
+    .kicker { display: inline-block; font-weight: 700; font-size: 13px; letter-spacing: .12em; color: var(--primary-contrast); background: color-mix(in oklab, var(--primary), transparent 60%); padding: 6px 10px; border-radius: 999px; }
+    .hero-card { border: 1px solid var(--border); padding: 18px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); }
+    .metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 12px; }
+    .metric { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+    .metric b { font-size: 22px; display: block; }
+    @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+
+    /* =============================================================
+       GRIDS & CARDS
+       ============================================================= */
+    .grid { display: grid; gap: 16px; }
+    .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 900px){ .grid.cols-3, .grid.cols-2 { grid-template-columns: 1fr; } }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); transition: transform var(--transition), box-shadow var(--transition); }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(0,0,0,.12); }
+
+    /* =============================================================
+       BLOGS
+       ============================================================= */
+    .blog-list { display:grid; gap:16px; grid-template-columns: repeat(3,1fr); }
+    .blog-card { display:flex; flex-direction:column; gap:10px; }
+    .blog-card time { font-size: 12px; color: var(--muted); }
+    .blog-card .read-more { margin-top:auto; align-self: start; }
+    @media (max-width: 1024px){ .blog-list { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 700px){ .blog-list { grid-template-columns: 1fr; } }
+
+    /* =============================================================
+       TIMELINE (Updates)
+       ============================================================= */
+    .timeline { position: relative; margin-left: 8px; }
+    .timeline::before { content:""; position:absolute; left: 10px; top:0; bottom:0; width:2px; background: var(--border); }
+    .t-item { position:relative; padding-left: 32px; margin: 14px 0; }
+    .t-item::before { content:""; position:absolute; left:3px; top:6px; width:16px; height:16px; border-radius:999px; background: linear-gradient(135deg, var(--primary), #7a49f1); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary), transparent 70%); }
+
+    /* =============================================================
+       FORMS
+       ============================================================= */
+    form.feedback { display:grid; gap:12px; max-width: 760px; }
+    .field { display:grid; gap:6px; }
+    label { font-weight: 600; }
+    input[type="text"], input[type="email"], textarea, select {
+      padding: 12px; border-radius: 12px; border:1px solid var(--border); background: var(--surface); color: var(--text);
+      transition: box-shadow var(--transition), border-color var(--transition);
+    }
+    input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary), transparent 70%); border-color: color-mix(in oklab, var(--primary), transparent 30%); }
+    textarea { min-height: 140px; resize: vertical; }
+    .status { font-size: 14px; }
+
+    /* =============================================================
+       FOOTER
+       ============================================================= */
+    footer { padding: 28px 0 40px; color: var(--muted); border-top: 1px solid var(--border); background: color-mix(in oklab, var(--surface), transparent 10%); }
+    .footer-grid { display:grid; gap:16px; grid-template-columns: 2fr 1fr 1fr; align-items: start; }
+    .footer-brand { display:flex; align-items:center; gap:12px; }
+    .footer-logo { height: clamp(24px, 4.5vw, 36px); width: auto; }
+    @media (max-width: 900px){ .footer-grid { grid-template-columns: 1fr; } }
+
+    /* =============================================================
+       REVEAL ANIMATIONS (respect reduced motion)
+       ============================================================= */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal { opacity: 0; transform: translateY(14px); }
+      .reveal.in { opacity: 1; transform: translateY(0); transition: opacity 600ms ease, transform 600ms ease; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#home" class="skip-link">Skip to content</a>
+
+  <!-- =========================================================
+       NAVBAR
+       ========================================================= -->
+  <nav class="nav" aria-label="Primary">
+    <div class="container nav-inner">
+      <!-- Brand with logo + title -->
+      <a class="brand" href="#home" aria-label="Go to Home">
+        <!-- Replace src with your real logo path; SVG/PNG works -->
+        <img src="logo.png" alt="AI DR Assistant logo" class="brand-img" />
+        <span class="brand-name">AI DR Assistant</span>
+        <span class="brand-sub">by JMI</span>
+      </a>
+
+      <button class="icon-btn hamburger" id="btnMenu" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks">☰</button>
+
+      <div class="navlinks" id="navlinks" role="menubar">
+        <a role="menuitem" href="#home" class="active">Home</a>
+        <a role="menuitem" href="#models">Models</a>
+        <a role="menuitem" href="#blogs">Blogs</a>
+        <a role="menuitem" href="#updates">Updates</a>
+        <a role="menuitem" href="#feedback">Feedback</a>
+        <a role="menuitem" href="#donate">Donate</a>
+        <a role="menuitem" href="#info">Info</a>
+      </div>
+
+      <button class="icon-btn" id="btnTheme" aria-label="Toggle theme" title="Toggle dark/light">🌓</button>
+    </div>
+  </nav>
+
+  <!-- =========================================================
+       HOME
+       ========================================================= -->
+  <header id="home" class="section reveal" tabindex="-1">
+    <div class="container hero">
+      <div>
+        <span class="kicker">WELCOME</span>
+        <h1>AI DR Assistant — Clear, Fast, Privacy‑Aware</h1>
+        <p class="lead">A modular, medical‑focused AI project by <strong>Team JMI</strong>. Explore the models, read our notes, follow updates, and send feedback — all in one place.</p>
+        <div class="grid cols-2">
+          <a href="#models" class="btn primary">Explore Models</a>
+          <a href="#feedback" class="btn">Share Feedback</a>
+        </div>
+        <div class="metrics">
+          <div class="metric"><b>3</b><span class="muted">Model families</span></div>
+          <div class="metric"><b>75%</b><span class="muted">Baseline accuracy*</span></div>
+          <div class="metric"><b>GDPR</b><span class="muted">Privacy‑aware flows</span></div>
+        </div>
+        <p class="lead" style="margin-top:8px;">*Replace with your real metrics later.</p>
+      </div>
+      <div class="hero-card">
+        <h3>Quick Start</h3>
+        <ol>
+          <li>Pick a model below (e.g., Imaging CNN).</li>
+          <li>Upload a sample (demo disabled).</li>
+          <li>Review explanation & confidence.</li>
+        </ol>
+        <div class="grid cols-3" style="margin-top:8px;">
+          <div class="badge">🔒 Optional on‑device</div>
+          <div class="badge">🧩 Modular</div>
+          <div class="badge">📱 Responsive</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       MODELS
+       ========================================================= -->
+  <section id="models" class="section reveal" aria-labelledby="models-title" tabindex="-1">
+    <div class="container">
+      <h2 id="models-title">Models</h2>
+      <p class="lead">Showcase your models with descriptions and quick selection. Wire these hooks to your backend or client runtime when ready.</p>
+
+      <div class="grid cols-3" id="modelGrid" aria-live="polite"></div>
+
+      <div class="card" style="margin-top:16px;">
+        <label for="modelSelect">Quick Select:</label>
+        <select id="modelSelect" class="select" aria-label="Choose model by name" style="padding:10px; border-radius:10px; border:1px solid var(--border); background: var(--surface); color: var(--text);"></select>
+        <div style="height:10px"></div>
+        <button class="btn primary" id="btnLoadModel">Load Selected Model</button>
+        <p class="status" id="modelStatus" role="status" aria-live="polite">No model loaded yet.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       BLOGS
+       ========================================================= -->
+  <section id="blogs" class="section reveal" aria-labelledby="blogs-title" tabindex="-1">
+    <div class="container">
+      <h2 id="blogs-title">Blogs</h2>
+      <p class="lead">Medical & tech articles. Rendered from a JSON array so adding new posts is trivial.</p>
+      <div class="blog-list" id="blogList" aria-live="polite"></div>
+      <div style="text-align:center; margin-top:10px;">
+        <button class="btn" id="btnAddSamplePost">+ Add Sample Post</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       UPDATES
+       ========================================================= -->
+  <section id="updates" class="section reveal" aria-labelledby="updates-title" tabindex="-1">
+    <div class="container">
+      <h2 id="updates-title">Updates</h2>
+      <p class="lead">Recent changes and new features.</p>
+      <div class="timeline" id="timeline" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       FEEDBACK
+       ========================================================= -->
+  <section id="feedback" class="section reveal" aria-labelledby="feedback-title" tabindex="-1">
+    <div class="container">
+      <h2 id="feedback-title">Feedback</h2>
+      <p class="lead">Tell us what’s working, what’s confusing, or what you want next. The form validates locally and is ready to connect to your backend.</p>
+
+      <form class="feedback" id="feedbackForm" novalidate>
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" placeholder="Your name" required />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+        </div>
+        <div class="field">
+          <label for="topic">Topic</label>
+          <select id="topic" name="topic" required>
+            <option value="">Choose a topic…</option>
+            <option>General Impression</option>
+            <option>Bug Report</option>
+            <option>Feature Request</option>
+            <option>Model Accuracy</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="Write your thoughts…" required></textarea>
+          <p class="lead" style="font-size:13px;">We read everything. Please avoid sharing personal health information (PHI).</p>
+        </div>
+        <div class="field">
+          <div>
+            <input id="consent" type="checkbox" required aria-describedby="consentHelp" />
+            <label for="consent">I consent to processing my feedback.</label>
+          </div>
+          <p class="lead" id="consentHelp" style="font-size:13px;">You can request deletion at any time.</p>
+        </div>
+        <button class="btn primary" type="submit">Submit Feedback</button>
+        <p class="status" id="feedbackStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       DONATE
+       ========================================================= -->
+  <section id="donate" class="section reveal" aria-labelledby="donate-title" tabindex="-1">
+    <div class="container">
+      <h2 id="donate-title">Donate</h2>
+      <p class="lead">If this project helps you, consider supporting ongoing development. Thank you! 💜</p>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>PayPal</h3>
+          <p class="lead">Use a hosted PayPal button or link.</p>
+          <a class="btn primary" href="#" target="_blank" rel="noopener">PayPal Donate</a>
+          <p class="lead" style="font-size:13px;">Replace the link with your real donation URL.</p>
+        </div>
+        <div class="card">
+          <h3>Stripe</h3>
+          <p class="lead">Link to a Stripe Checkout session for one‑time or recurring support.</p>
+          <a class="btn primary" href="#" target="_blank" rel="noopener">Stripe Checkout</a>
+          <p class="lead" style="font-size:13px;">Set up a server endpoint to create sessions securely.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       INFO (Team JMI)
+       ========================================================= -->
+  <section id="info" class="section reveal" aria-labelledby="info-title" tabindex="-1">
+    <div class="container">
+      <h2 id="info-title">Team JMI</h2>
+      <p class="lead">Mission: <em>Advance safe, accessible AI that augments clinicians and improves patient outcomes.</em></p>
+
+      <div class="grid cols-3" id="teamGrid" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <img src="logo.png" alt="AI DR Assistant logo" class="footer-logo" />
+        <div>
+          <strong>AI DR Assistant</strong>
+          <div class="lead" style="font-size:13px;">by Team JMI • Modular, privacy‑aware AI for medical and tech use‑cases.</div>
+        </div>
+      </div>
+      <div>
+        <div class="lead" style="font-size:13px;">Pages</div>
+        <div><a href="#home">Home</a></div>
+        <div><a href="#models">Models</a></div>
+        <div><a href="#blogs">Blogs</a></div>
+        <div><a href="#updates">Updates</a></div>
+        <div><a href="#feedback">Feedback</a></div>
+        <div><a href="#donate">Donate</a></div>
+        <div><a href="#info">Info</a></div>
+      </div>
+      <div>
+        <div class="lead" style="font-size:13px;">Legal</div>
+        <div><a href="#">Terms</a></div>
+        <div><a href="#">Privacy</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       SCRIPTS (Modular, commented)
+       ========================================================= -->
+  <script type="module">
+    // ---------- Helpers ----------
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    // Respect reduced motion in JS animations
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ---------- Theme toggle (persists to localStorage) ----------
+    const THEME_KEY = 'theme'; // 'light' | 'dark'
+    const html = document.documentElement;
+    (function initTheme(){
+      const saved = localStorage.getItem(THEME_KEY);
+      if(saved) html.setAttribute('data-theme', saved);
+    })();
+    $('#btnTheme').addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem(THEME_KEY, next);
+    });
+
+    // ---------- Navbar: mobile open/close + active link highlight ----------
+    const navlinks = $('#navlinks');
+    const btnMenu = $('#btnMenu');
+    btnMenu.addEventListener('click', () => {
+      const open = navlinks.classList.toggle('open');
+      btnMenu.setAttribute('aria-expanded', String(open));
+    });
+    navlinks.addEventListener('click', (e) => {
+      if(e.target.matches('a')){ navlinks.classList.remove('open'); btnMenu.setAttribute('aria-expanded','false'); }
+    });
+
+    // Smooth scrolling (in addition to CSS scroll-behavior) for better offset control
+    function smoothScrollTo(id){
+      const el = $(id); if(!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 72; // offset for navbar
+      window.scrollTo({ top, behavior: prefersReduced ? 'auto' : 'smooth' });
+    }
+    $$('#navlinks a').forEach(a => a.addEventListener('click', (e)=>{
+      if(a.getAttribute('href').startsWith('#')){ e.preventDefault(); smoothScrollTo(a.getAttribute('href')); }
+    }));
+
+    // Active section highlighting via IntersectionObserver
+    const sections = ['#home','#models','#blogs','#updates','#feedback','#donate','#info'].map(id => $(id));
+    const linkById = new Map($$('#navlinks a').map(a => [a.getAttribute('href'), a]));
+    const ioNav = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = '#' + entry.target.id; const link = linkById.get(id); if(!link) return;
+        if(entry.isIntersecting){ $$('#navlinks a').forEach(x => x.classList.remove('active')); link.classList.add('active'); history.replaceState(null, '', id); }
+      });
+    }, { rootMargin: '-50% 0% -40% 0%', threshold: 0 });
+    sections.forEach(sec => ioNav.observe(sec));
+
+    // ---------- Reveal animations on scroll ----------
+    const revealables = $$('.reveal');
+    const ioReveal = new IntersectionObserver((entries)=>{
+      entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add('in'); ioReveal.unobserve(entry.target); } });
+    }, { threshold: 0.12 });
+    revealables.forEach(el => ioReveal.observe(el));
+
+    // ---------- Data (editable) ----------
+    const MODELS = [
+      { id:'img-cnn', name:'Imaging CNN', tagline:'X‑ray & CT analysis', desc:'Convolutional network optimized for chest X‑rays (128×128) with heatmap explanations.', chips:['Grad‑CAM','TF/Keras','FP16'] },
+      { id:'tabular-gbt', name:'Risk Predictor (GBTs)', tagline:'EHR/tabular features', desc:'Gradient‑boosted trees for risk stratification with calibrated probabilities.', chips:['CatBoost','AUROC 0.84*','Explainable'] },
+      { id:'nlp-llm', name:'Clinical Notes Assistant', tagline:'NLP for triage', desc:'Summarizes notes, extracts key findings, and drafts reports with safety rails.', chips:['NER','Summarization','Zero‑shot'] },
+    ];
+
+    const BLOGS = [
+      { id:'b-1', title:'From Pixels to Decisions: Our Imaging Pipeline', date:'2025-06-12', excerpt:'A behind‑the‑scenes tour of preprocessing, inference, and saliency maps for radiographs.' },
+      { id:'b-2', title:'Risk Modeling with Tabular Data: What Matters', date:'2025-07-03', excerpt:'Feature selection, leakage pitfalls, and calibrated probabilities in clinical datasets.' },
+      { id:'b-3', title:'Human‑in‑the‑Loop: Designing Safer AI Workflows', date:'2025-08-01', excerpt:'Review queues, confidence thresholds, and escalation to experts.' },
+    ];
+
+    const UPDATES = [
+      { date:'2025-08-14', title:'v0.7 — Info tab', notes:'Introduced Team JMI section with bios and mission.' },
+      { date:'2025-08-10', title:'v0.6 — Blog system & timeline', notes:'Added dynamic blog rendering and updates timeline.' },
+      { date:'2025-08-05', title:'v0.5 — Theme & Nav', notes:'Dark/Light mode with persistence, sticky nav with active highlighting.' },
+    ];
+
+    const TEAM = [
+      { name:'Lead Researcher', role:'ML / Medical Imaging', bio:'Focus on CNNs for radiology, evaluation protocols, and safety checks.' },
+      { name:'Backend Engineer', role:'APIs / DevOps', bio:'Builds model serving, data pipelines, and secure deployments.' },
+      { name:'Frontend Engineer', role:'UX / Accessibility', bio:'Designs usable interfaces and ensures WCAG‑friendly flows.' },
+    ];
+
+    // ---------- Renderers ----------
+    function renderModels(){
+      const grid = $('#modelGrid'); grid.innerHTML = '';
+      MODELS.forEach(m => {
+        const el = document.createElement('article'); el.className = 'card';
+        el.innerHTML = `
+          <div class="badge">${m.tagline}</div>
+          <h3>${m.name}</h3>
+          <p>${m.desc}</p>
+          <div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(80px,auto)); gap:8px;">${m.chips.map(c => `<span class="badge">${c}</span>`).join('')}</div>
+          <div style="height:8px"></div>
+          <div class="grid cols-2">
+            <button class="btn" data-action="details" data-id="${m.id}">Details</button>
+            <button class="btn primary" data-action="select" data-id="${m.id}">Use Model</button>
+          </div>`;
+        grid.appendChild(el);
+      });
+
+      // Populate quick select
+      const sel = $('#modelSelect');
+      sel.innerHTML = '<option value="">Choose a model…</option>' + MODELS.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+
+      // Action handlers
+      grid.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-action]'); if(!btn) return;
+        const { action, id } = btn.dataset; const model = MODELS.find(x => x.id === id);
+        if(action === 'details'){
+          alert(`${model.name}\n\n${model.desc}\n\nTags: ${model.chips.join(', ')}`);
+        } else if(action === 'select'){
+          $('#modelSelect').value = id; $('#modelStatus').textContent = `Selected: ${model.name}`;
+        }
+      });
+    }
+
+    function renderBlogs(){
+      const list = $('#blogList'); list.innerHTML = '';
+      BLOGS.sort((a,b) => b.date.localeCompare(a.date));
+      BLOGS.forEach(post => {
+        const el = document.createElement('article'); el.className = 'card blog-card';
+        el.innerHTML = `
+          <div class="badge">Blog</div>
+          <h3>${post.title}</h3>
+          <time datetime="${post.date}">${new Date(post.date).toLocaleDateString()}</time>
+          <p>${post.excerpt}</p>
+          <a class="btn read-more" href="#" aria-label="Read ${post.title}">Read more</a>`;
+        list.appendChild(el);
+      });
+    }
+
+    function renderUpdates(){
+      const t = $('#timeline'); t.innerHTML = '';
+      UPDATES.sort((a,b) => b.date.localeCompare(a.date));
+      UPDATES.forEach(u => {
+        const el = document.createElement('div'); el.className = 't-item';
+        el.innerHTML = `<div class="badge">${new Date(u.date).toLocaleDateString()}</div><h3>${u.title}</h3><p class="lead">${u.notes}</p>`;
+        t.appendChild(el);
+      });
+    }
+
+    function renderTeam(){
+      const grid = $('#teamGrid'); grid.innerHTML = '';
+      TEAM.forEach(m => {
+        const el = document.createElement('article'); el.className = 'card';
+        el.innerHTML = `
+          <h3>${m.name}</h3>
+          <div class="badge">${m.role}</div>
+          <p>${m.bio}</p>`;
+        grid.appendChild(el);
+      });
+    }
+
+    // Initial render
+    renderModels(); renderBlogs(); renderUpdates(); renderTeam();
+
+    // Add sample blog post (demo)
+    $('#btnAddSamplePost').addEventListener('click', () => {
+      const n = BLOGS.length + 1;
+      BLOGS.push({ id: `b-${n}`, title: `New Post #${n}`, date: new Date().toISOString().slice(0,10), excerpt: 'Placeholder body — replace with your content.' });
+      renderBlogs();
+    });
+
+    // Model quick-load (stub)
+    $('#btnLoadModel').addEventListener('click', () => {
+      const id = $('#modelSelect').value; const status = $('#modelStatus');
+      if(!id){ status.textContent = 'Please choose a model first.'; return; }
+      const model = MODELS.find(x => x.id===id);
+      // Placeholder — integrate with your backend or TF.js init here
+      status.textContent = `Loaded: ${model.name} (demo stub)`;
+    });
+
+    // Feedback submission (demo, replace with backend later)
+    $('#feedbackForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); const status = $('#feedbackStatus'); status.textContent = '';
+      const fd = new FormData(e.target); const payload = Object.fromEntries(fd.entries());
+      if(!$('#consent').checked){ status.textContent = 'Please provide consent to submit.'; return; }
+      for(const [k,v] of Object.entries(payload)){ if(!String(v).trim()){ status.textContent = 'Please fill all fields.'; return; } }
+
+      // Uncomment to POST to your API
+      /*
+      try {
+        const res = await fetch('/api/feedback', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+        if(!res.ok) throw new Error('Network error');
+        status.textContent = 'Thanks! Your feedback was submitted.'; status.style.color = 'green'; e.target.reset(); $('#consent').checked = false; return;
+      } catch(err){ status.textContent = 'Submission failed. Please try again later.'; status.style.color = 'crimson'; return; }
+      */
+
+      console.info('Feedback payload (demo):', payload);
+      status.textContent = 'Thanks! (Demo) Feedback captured in console.'; status.style.color = 'green';
+      e.target.reset(); $('#consent').checked = false;
+    });
+  </script>
+</body>
+</html>
